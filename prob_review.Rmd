@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ***Information*** allows us to quantify the amount of uncertainty in a probability distribution
 
-##**Deep Learning 3.1 why probability?**
+##**why probability? (DL 3.1)**
 Machine learning must always deal with uncertain quantities, and sometimes may need to deal with stochastic quantities. There are three possible sources of uncertainty:
 
 - Inherent stochasticity in the system being modeled. (e.g. quantum mechanics or randomly shuffled cards.)
@@ -30,7 +30,7 @@ Two ways of thinking about probability:
 - ***frequentist*** probability- related directly to the rates at which events occur. E.g., flip a fair coin an infinite number of times and half of the time it will be heads.
 - ***Bayesian*** probability- related to qualitative levels of certainty, i.e. a *degree of belief* that an event will happen. (E.g., the patient has a 40% chance of having the flu.)
 
-##**CS229 1 elements of probability**
+##**elements of probability (CS229-1)**
 The three ***axioms of probability*** define probability on a set:
 
 1. ***sample space*** $\Omega$: The set of all possible outcomes of a random experiment. Each outcome $\omega \in \Omega$ can be thought of as a complete description of the state of the real world at the end of the experiment. For example, the sample space of rolling a 6-sided die is the set $\Omega = \{1,2,3,4,5,6\}$.
@@ -53,7 +53,7 @@ properties:
 - (law of total probability) If $A_1, \dots, A_k$ are a set of disjoint events such that $\underset{i=1}\cup A_i = \Omega$, then $\sum_{i=1}^k P(A_k) = 1$
 
 ## **random variables (CS229-2, DL-3.2)**
-The deep learning book says, "a ***random variable*** is a variable that can take on different values randomly," which I guess is technically correct but sounds like what I would write on an exam if I didn't know the real answer. More formally, a random variable $X$ is a function $X: \Omega \rightarrow \mathbb{R}$, denoted $X(\omega)$ or simply $X$. The value that a random variable may take on can be denoted in lowercase: $x$. For example, $X(\omega)$ can be the number of heads occurring in a sequence of coin tosses, $\omega$.
+The deep learning book says, "a ***random variable*** is a variable that can take on different values randomly," which I guess is technically correct but sounds suspiciously like what I would write on an exam if I didn't know the real answer. More formally, a random variable $X$ is a function $X: \Omega \rightarrow \mathbb{R}$, denoted $X(\omega)$ or simply $X$. The value that a random variable may take on can be denoted in lowercase: $x$. For example, $X(\omega)$ can be the number of heads occurring in a sequence of coin tosses, $\omega$.
 
 Random variables may be discrete or continuous. A ***discrete random variable*** is one that has a finite or countably infinite number of states. The probability of the set associated with a random variable $X$ taking on a specific value $k$ is:
 $$
@@ -64,8 +64,8 @@ $$
 P(a \leq X \leq b) \triangleq P(\{\omega: a\leq X(\omega) \leq b\})
 $$
 
-## **probability distribution functions (DL-3.3, CS229 2.2-3)**
-A ***probability distribution*** is a description of how likely a random variable or set of random variables is to take on each of it possible states. In order to specify the probability measure used when dealing with random variables, it is often convenient to specify alternative functions, i.e. cumulative distribution functions (CDFs), probability mass functions (PMFs), and probability density functions (PDFs).
+## **probability distribution functions (DL-3.3, CS229 2.1-2.3)**
+A ***probability distribution*** is a description of how likely a random variable or set of random variables is to take on each of its possible states. In order to specify the probability measure used when dealing with random variables, it is often convenient to specify alternative functions, i.e. cumulative distribution functions (CDFs), probability mass functions (PMFs), and probability density functions (PDFs).
 
 A ***cumulative distribution function (CDF)*** is a function $F_X: \mathbb{R} \rightarrow [0,1]$ which specifies a probability measure as,
 $$
@@ -94,7 +94,17 @@ Probability distributions over continuous random variables (for which the CDF is
 
 A probability density function $p(x)$ does not give the probability of a specific state directly. Instead, the probability of landing inside an infinitesimal region with volume $\partial x$ is given by $p(x) \partial x$.
 
-## **DL 3.4 marginal probability**
+## **joint and marginal distributions (CS229 3.1, DL 3.4)**
+When working with multiple random variables, we sometimes want to know the values that they assume simultaneously during outcomes of a random experiment. For example, consider an experiment where a coin is flipped ten times, where the two random variables of interest are $X(\omega) = \text{number of heads}$ and $Y(\omega) = \text{the length of the longest run of consecutive heads}$. In this case of two random variables, the ***joint cumulative distribution function*** of $X$ and $Y$, is defined by
+$$
+F_{XY}(x,y) \triangleq P(X \leq x, Y \leq y)
+$$
+The joint CDF $F_{XY}(x,y)$ and the distribution functions $F_X(x)$ and $F_Y(y)$ of each variable separately are related by
+$$
+F_X(x) = \lim_{y \rightarrow \infty} F_{XY}(x,y)dy \\
+F_Y(y) = \lim_{x \rightarrow \infty} F_{XY}(x,y)dx
+$$
+
 Sometimes we know the probability distribution over a set of variables and we want to know the probability distribution over just a subset of them. The probability distribution over the subset is known as the ***marginal probability*** distibution. For example, suppose we have discrete random variables $x$ and $y$, and we know $P(x,y)$. We can find $P(x)$ with the ***sum rule***:
 $$
 \forall x \in X, P(X =x) = \sum_y P(X=x, Y=y)
@@ -103,13 +113,14 @@ For continuous variables, summation is replace with integration:
 $$
 p(x) = \int p(x,y)dy
 $$
-## **3.5 conditional probability**
+
+## **conditional probability (DL 3.5, CS229 1.1)**
 $$
 P(Y = y | X = x) = \frac{P(Y = y, X = x)}{P(X = x)}
 $$
-From the above definition, the conditional probability is only defined when $P(X=x)>0$, i.e. the conditional probability cannot be computed on an event that never happens.
+From the above definition, the conditional probability is only defined when $P(X=x)>0$, i.e. the conditional probability cannot be computed on an event that never happens. Two events are ***independent*** iff $P(y,x) = P(y)P(x)$, or equivalently, $P(y|x) = P(y)$. That is, independence is equivalent to saying that observing $x$ does not have any effect on the probability of $y$.
 
-## **3.6 chain rule of conditional probabilities**
+## **chain rule of conditional probabilities (DL 3.6)**
 Any joint probability distribution over many random variables may be decomposed into conditional distributions over only one variable. This follows directly from the above definition of conditional probabilities:
 
 $$
@@ -120,7 +131,8 @@ $$
 & = P(X_1) \prod_{i=2}^n P(X_i | X_1, \dots, X_{i-1})
 \end{align}
 $$
-## **3.7 independence and conditional independence**
+
+## **independence and conditional independence (DL 3.7)**
 Two random variables $x$ and $y$ are ***independent*** if their probability distribution can be expressed as a product of two factors, one involving only $x$ and one involving only $y$:
 $$
 \forall x \in X, y \in Y, \quad p(X=x,Y=y) = p(X=x)p(Y=y)
@@ -133,8 +145,9 @@ $$
 
 Independence can be denoted shorthand: $X \perp Y$ indicates that $X$ and $Y$ are independent, while $X \perp Y | Z$ means that $X$ and $Y$ are condionally independent given $Z$.
 
-## **3.8 expectation, variance, and covariance**
-The ***expectation*** or ***expected value*** of some function $f(x)$ with respect to a probability distribution $P(X)$ is the average or mean value that $f$ takes on when $x$ is drawn from $P$. For discrete variables:
+## **expectation (DL 3.8, CS229 2.4)**
+The ***expectation*** or ***expected value*** of some function $f(x)$ with respect to a probability distribution $P(X)$ is the average or mean value that $f$ takes on when $x$ is drawn from $P$. The expectation can be thought of as a weighted average of the values that $f(x)$ can take on for different values of $x$, where the weights are given by $P(X)$. As a special case, the expectation of a random variable itself is found by letting $f(x)=x$; this is the ***mean*** of the random variable $X$.
+For discrete variables:
 $$
 \mathbb{E}_{X \sim P}[f(x)] = \sum_x P(x)f(x)
 $$
@@ -146,18 +159,38 @@ $$
 
 When the identity of the distribution is clear from the context, we can omit it and simply write the name of the random variable that the expectation is over, i.e. $\mathbb{E}_X[f(x)]$. If it is clear which random variable the expectation is over, we can omit the subscript entirely, i.e. $\mathbb{E}[f(x)]$.
 
-Expectations are linear, e.g.
+Properties of the expected value:
+
+- $\mathbb{E}[a] = a$ for any constant $a \in \mathbb{R}$
+- Expectations are linear, i.e.
 $$
 \mathbb{E}_X[\alpha f(x) + \beta g(x)] = \alpha \mathbb{E}_X[f(x)] + \beta \mathbb{E}_X[g(x)]
 $$
 , when $\alpha$ and $\beta$ are not dependent on $x$.
+- for a discrete random variable $X$, $\mathbb{E}[1\{X = k\}] = P(X=k)$
 
-The ***variance*** gives a measure of how much the values of a function of a random variable $X$ vary as we sample different values of $x$ from its probability distribution:
+## **variance and covariance (DL 3.8, CS229 2.5)**
+The ***variance*** gives a measure of how concentrated the distribution of a random variable $X$ is around its mean:
 $$
 \text{Var}(f(x)) = \mathbb{E}\left[ \left( f(x)-\mathbb{E}[f(x) ]\right)^2 \right]
 $$
+Using the properties of the expected value (namely that expectations are linear and that $\mathbb{E}[X]$ is a constant wrt an outer expectation), we can derive an alternate expression for the variance:
+$$
+\begin{align}
+\text{Var}[X] & = \mathbb{E}[(X-E[X])^2] \\
+              & = \mathbb{E}[X^2-2X \mathbb{E}[X] + \mathbb{E}^2[X]] \\
+              & = \mathbb{E}[X^2] - 2 \mathbb{E}\left[X \mathbb{E}[X]\right] + \mathbb{E}\left[\mathbb{E}^2[X]\right] \\
+              & = \mathbb{E}[X^2] - 2 \mathbb{E}[X] \mathbb{E}[X] + \mathbb{E}^2[X] \\
+              & = \mathbb{E}[X^2] - \mathbb{E}^2[X]
+\end{align}
+$$
 
-When the variance is low, the values of $f(x)$ cluster near their expected value. The square root of the variance is known as the ***standard deviation***.
+When the variance is low, the values of $f(x)$ cluster near their expected value. The square root of the variance is known as the ***standard deviation***. 
+
+Properties of the variance:
+
+- $\text{Var}[a] = 0$ for any constant $a \in \mathbb{R}$
+- $\text{Var}[af(x)] = a^2 \text{Var}[f(x)]$ for any constant $a \in \mathbb{R}$
 
 The ***covariance*** gives a sense of how much two values are linearly related to each other, as well as the scale of these variables:
 $$
