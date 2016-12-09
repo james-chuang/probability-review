@@ -1,0 +1,56 @@
+---
+output:
+  html_document:
+    fig_width: 4.5
+    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# **probability and information theory**
+
+***Probability theory***
+
+- a mathematical framework for representing uncertain statements
+- a means of quantifying uncertainty, and axioms for new uncertain statements
+
+***Information*** allows us to quantify the amount of uncertainty in a probability distribution
+
+##**Deep Learning 3.1 why probability?**
+Machine learning must always deal with uncertain quantities, and sometimes may need to deal with stochastic quantities. There are three possible sources of uncertainty:
+
+- Inherent stochasticity in the system being modeled. (e.g. quantum mechanics or randomly shuffled cards.)
+- Incomplete observabiity. Deterministic systems can appear stochastic when we cannot observe all of the variables that drive the behavior of the system.
+- Incomplete modeling. Models necessarily discard some of the observed information, resulting in uncertainty in the model's predictions.
+
+Two ways of thinking about probability:
+
+- ***frequentist*** probability- related directly to the rates at which events occur. E.g., flip a fair coin an infinite number of times and half of the time it will be heads.
+- ***Bayesian*** probability- related to qualitative levels of certainty, i.e. a *degree of belief* that an event will happen. (E.g., the patient has a 40% chance of having the flu.)
+
+##**CS229 1 elements of probability**
+The three ***axioms of probability*** define probability on a set:
+
+1. ***sample space*** $\Omega$: The set of all possible outcomes of a random experiment. Each outcome $\omega \in \Omega$ can be thought of as a complete description of the state of the real world at the end of the experiment.
+2. ***set of events*** (or ***event space***) $\mathcal{F}$: A set whose elements $A \in \mathcal{F}$ (called ***events***) are subsets of $\Omega$ (i.e., $A \subseteq \Omega$ is a collection of possible outcomes of an experiment).
+3. ***probability measure***: A function $P: \mathcal{F} \rightarrow \mathbb{R}$ that satisfies the following properties:
+
+- $P(A) \geq 0$, for all $A \in \mathcal{F}$
+- $P(\Omega) = 1$
+- If $A_1, A_2,...$ are disjoint events (i.e. $A_i \cap A_j = \emptyset$ whenever $i \neq j$), then
+$$
+P(\cup_i A_i) = \sum_i P(A_i)
+$$
+
+properties:
+
+- If $A \subseteq B \Rightarrow P(A) \leq P(B)$
+- $P(A \cap B) \leq \min(P(A),P(B))$
+- (union bound) $P(A \cup B) \leq P(A) + P(B)$
+- $P(\Omega \backslash A) = 1-P(A)$
+- (law of total probability) If $A_1, \dots, A_k$ are a set of disjoint events such that $\cup_{i=1}^k A_i = \Omega$, then $\sum_{i=1}^k P(A_k) = 1$
+
+## **random variables (CS229-2, DL-3.2)**
+
