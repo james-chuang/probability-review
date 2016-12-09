@@ -33,9 +33,9 @@ Two ways of thinking about probability:
 ##**CS229 1 elements of probability**
 The three ***axioms of probability*** define probability on a set:
 
-1. ***sample space*** $\Omega$: The set of all possible outcomes of a random experiment. Each outcome $\omega \in \Omega$ can be thought of as a complete description of the state of the real world at the end of the experiment.
-2. ***set of events*** (or ***event space***) $\mathcal{F}$: A set whose elements $A \in \mathcal{F}$ (called ***events***) are subsets of $\Omega$ (i.e., $A \subseteq \Omega$ is a collection of possible outcomes of an experiment).
-3. ***probability measure***: A function $P: \mathcal{F} \rightarrow \mathbb{R}$ that satisfies the following properties:
+1. ***sample space*** $\Omega$: The set of all possible outcomes of a random experiment. Each outcome $\omega \in \Omega$ can be thought of as a complete description of the state of the real world at the end of the experiment. For example, the sample space of rolling a 6-sided die is the set $\Omega = \{1,2,3,4,5,6\}$.
+2. ***set of events*** (or ***event space***) $\mathcal{F}$: A set whose elements $A \in \mathcal{F}$ (called ***events***) are subsets of $\Omega$ (i.e., $A \subseteq \Omega$ is a collection of possible outcomes of an experiment). An event can be a singleton set, e.g. in the die example, rolling a $1$ is an event.
+3. ***probability measure***: The probability measure describes how likely each event in the sample space will occur. More formally, it is a function $P: \mathcal{F} \rightarrow \mathbb{R}$ that satisfies the following properties:
 
 - $P(A) \geq 0$, for all $A \in \mathcal{F}$
 - $P(\Omega) = 1$
@@ -50,7 +50,127 @@ properties:
 - $P(A \cap B) \leq \min(P(A),P(B))$
 - (union bound) $P(A \cup B) \leq P(A) + P(B)$
 - $P(\Omega \backslash A) = 1-P(A)$
-- (law of total probability) If $A_1, \dots, A_k$ are a set of disjoint events such that $\cup_{i=1}^k A_i = \Omega$, then $\sum_{i=1}^k P(A_k) = 1$
+- (law of total probability) If $A_1, \dots, A_k$ are a set of disjoint events such that $\underset{i=1}\cup A_i = \Omega$, then $\sum_{i=1}^k P(A_k) = 1$
 
 ## **random variables (CS229-2, DL-3.2)**
+The deep learning book says, "a ***random variable*** is a variable that can take on different values randomly," which I guess is technically correct but sounds like what I would write on an exam if I didn't know the real answer. More formally, a random variable $X$ is a function $X: \Omega \rightarrow \mathbb{R}$, denoted $X(\omega)$ or simply $X$. The value that a random variable may take on can be denoted in lowercase: $x$. For example, $X(\omega)$ can be the number of heads occurring in a sequence of coin tosses, $\omega$.
 
+Random variables may be discrete or continuous. A ***discrete random variable*** is one that has a finite or countably infinite number of states. The probability of the set associated with a random variable $X$ taking on a specific value $k$ is:
+$$
+P(X=k) \triangleq P(\{\omega : X(\omega) \}) 
+$$
+A ***continuous random variable*** is associated with a real value, i.e. it takes on an infinite number of possible values. The probability that $X$ takes on a value between $a,b \in \mathbb{R}$, where $a<b$ is:
+$$
+P(a \leq X \leq b) \triangleq P(\{\omega: a\leq X(\omega) \leq b\})
+$$
+
+## **probability distribution functions (DL-3.3, CS229 2.2-3)**
+A ***probability distribution*** is a description of how likely a random variable or set of random variables is to take on each of it possible states. In order to specify the probability measure used when dealing with random variables, it is often convenient to specify alternative functions, i.e. cumulative distribution functions (CDFs), probability mass functions (PMFs), and probability density functions (PDFs).
+
+A ***cumulative distribution function (CDF)*** is a function $F_X: \mathbb{R} \rightarrow [0,1]$ which specifies a probability measure as,
+$$
+F_X(x) \triangleq P(X \leq x)
+$$
+Properties of the CDF:
+
+- $0 \leq F_X(x) \leq 1$
+- $\underset{x \rightarrow - \infty}\lim F_X(x) = 0$
+- $\underset{x \rightarrow \infty}\lim F_X(x) = 1$
+- $x \leq y \Rightarrow F_X(x) \leq F_Y(y)$
+
+Probability distributions over discrete random variables are described using a ***probability mass function*** (PMF), a function $p_X: \Omega \rightarrow \mathbb{R}$ such that:
+$$
+p_X(x) \triangleq P(X=x)
+$$ 
+For discrete random variables, the notation $\text{Val}(X)$ is used to indicate the set of possible values that the random variable $X$ may assume ($\text{Val}(X)$ is the domain of $p_X(x)$). For example, if $X(\omega)$ is a random variable indicating the number of heads out of ten coin tosses, then $\text{Val}(X)=\{0,1,2, \dots, 10\}$.
+
+Properties of PMFs:
+
+- $0 \leq p_X(x) \leq 1$
+- $\sum_{x \in \text{Val}(X)} p_X(x)=1$
+- $\sum_{x \in A}p_X(x) = P(X \in A)$
+
+Probability distributions over continuous random variables (for which the CDF is differentiable everywhere) are described using a ***probability density function*** (PDF), a function $f_X(x) \triangleq \frac{dF_X(x)}{dx}$.
+
+A probability density function $p(x)$ does not give the probability of a specific state directly. Instead, the probability of landing inside an infinitesimal region with volume $\partial x$ is given by $p(x) \partial x$.
+
+## **DL 3.4 marginal probability**
+Sometimes we know the probability distribution over a set of variables and we want to know the probability distribution over just a subset of them. The probability distribution over the subset is known as the ***marginal probability*** distibution. For example, suppose we have discrete random variables $x$ and $y$, and we know $P(x,y)$. We can find $P(x)$ with the ***sum rule***:
+$$
+\forall x \in X, P(X =x) = \sum_y P(X=x, Y=y)
+$$
+For continuous variables, summation is replace with integration:
+$$
+p(x) = \int p(x,y)dy
+$$
+## **3.5 conditional probability**
+$$
+P(Y = y | X = x) = \frac{P(Y = y, X = x)}{P(X = x)}
+$$
+From the above definition, the conditional probability is only defined when $P(X=x)>0$, i.e. the conditional probability cannot be computed on an event that never happens.
+
+## **3.6 chain rule of conditional probabilities**
+Any joint probability distribution over many random variables may be decomposed into conditional distributions over only one variable. This follows directly from the above definition of conditional probabilities:
+
+$$
+\begin{align}
+& P(X_1, \dots, X_n) \\
+& = P(X_n | X_1, X_2, \dots, X_{n-1}) P(X_1, X_2, \dots, X_{n-1}) \\
+& = \dots \\
+& = P(X_1) \prod_{i=2}^n P(X_i | X_1, \dots, X_{i-1})
+\end{align}
+$$
+## **3.7 independence and conditional independence**
+Two random variables $x$ and $y$ are ***independent*** if their probability distribution can be expressed as a product of two factors, one involving only $x$ and one involving only $y$:
+$$
+\forall x \in X, y \in Y, \quad p(X=x,Y=y) = p(X=x)p(Y=y)
+$$
+
+Two random variables are ***conditionally independent*** given a random variable $z$ if the conditional probability distribution over $x$ and $y$ factorized in this way for every value of $z$:
+$$
+\forall x \in X, y \in Y, z \in Z, \quad p(X=x,Y=y,Z=z) = p(X=x|Z=z)p(Y=y|Z=z)
+$$
+
+Independence can be denoted shorthand: $X \perp Y$ indicates that $X$ and $Y$ are independent, while $X \perp Y | Z$ means that $X$ and $Y$ are condionally independent given $Z$.
+
+## **3.8 expectation, variance, and covariance**
+The ***expectation*** or ***expected value*** of some function $f(x)$ with respect to a probability distribution $P(X)$ is the average or mean value that $f$ takes on when $x$ is drawn from $P$. For discrete variables:
+$$
+\mathbb{E}_{X \sim P}[f(x)] = \sum_x P(x)f(x)
+$$
+
+while for continuous variables:
+$$
+\mathbb{E}_{X \sim p}[f(x)] = \int p(x)f(x)dx
+$$
+
+When the identity of the distribution is clear from the context, we can omit it and simply write the name of the random variable that the expectation is over, i.e. $\mathbb{E}_X[f(x)]$. If it is clear which random variable the expectation is over, we can omit the subscript entirely, i.e. $\mathbb{E}[f(x)]$.
+
+Expectations are linear, e.g.
+$$
+\mathbb{E}_X[\alpha f(x) + \beta g(x)] = \alpha \mathbb{E}_X[f(x)] + \beta \mathbb{E}_X[g(x)]
+$$
+, when $\alpha$ and $\beta$ are not dependent on $x$.
+
+The ***variance*** gives a measure of how much the values of a function of a random variable $X$ vary as we sample different values of $x$ from its probability distribution:
+$$
+\text{Var}(f(x)) = \mathbb{E}\left[ \left( f(x)-\mathbb{E}[f(x) ]\right)^2 \right]
+$$
+
+When the variance is low, the values of $f(x)$ cluster near their expected value. The square root of the variance is known as the ***standard deviation***.
+
+The ***covariance*** gives a sense of how much two values are linearly related to each other, as well as the scale of these variables:
+$$
+\text{Cov}(f(x),g(y)) = \mathbb{E} \left[\left(f(x)- \mathbb{E}[f(x)]\right)\left(g(y) - \mathbb{E}[g(y)] \right) \right]
+$$
+
+***Correlation*** normalizes the covariance in order to measure how much the variables are related, without being affected by the scale of the separate variables. Covariance and dependence are related, but distinct. Two variables that are independent have zero covariance, and two variables with non-zero covariance are dependent. However, independence is a stronger requirement than zero covariance, because it excludes nonlinear relationships in addition to the linear relationships specified by zero covariance. Thus, it is possible for two variables to be dependent but have zero covariance.
+
+The ***covariance matrix*** of a vector $x \in \mathbb{R}^n$ is an $n \times n$ matrix, such that
+$$
+\text{Cov}(x)_{i,j} = \text{Cov}(x_i, x_j)
+$$
+The diagonal elements of the covariance give the variance:
+$$
+\text{Cov}(x_i,x_i) = \text{Var}(x_i)
+$$
