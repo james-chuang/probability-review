@@ -133,7 +133,7 @@ $(document).ready(function () {
 <p>Machine learning must always deal with uncertain quantities, and sometimes may need to deal with stochastic quantities. There are three possible sources of uncertainty:</p>
 <ul>
 <li>Inherent stochasticity in the system being modeled. (e.g. quantum mechanics or randomly shuffled cards.)</li>
-<li>Incomplete observabiity. Deterministic systems can appear stochastic when we cannot observe all of the variables that drive the behavior of the system.</li>
+<li>Incomplete observability. Deterministic systems can appear stochastic when we cannot observe all of the variables that drive the behavior of the system.</li>
 <li>Incomplete modeling. Models necessarily discard some of the observed information, resulting in uncertainty in the model’s predictions.</li>
 </ul>
 <p>Two ways of thinking about probability:</p>
@@ -209,15 +209,18 @@ F_Y(y) = \lim_{x \rightarrow \infty} F_{XY}(x,y)dx
 \]</span></p>
 <p>Sometimes we know the probability distribution over a set of variables and we want to know the probability distribution over just a subset of them. The probability distribution over the subset is known as the <strong><em>marginal probability</em></strong> distibution. For example, suppose we have discrete random variables <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, and we know <span class="math inline">\(P(x,y)\)</span>. We can find <span class="math inline">\(P(x)\)</span> with the <strong><em>sum rule</em></strong>: <span class="math display">\[
 \forall x \in X, P(X =x) = \sum_y P(X=x, Y=y)
-\]</span> For continuous variables, summation is replace with integration: <span class="math display">\[
+\]</span> For continuous variables, summation is replaced with integration: <span class="math display">\[
 p(x) = \int p(x,y)dy
 \]</span></p>
 </div>
-<div id="conditional-probability-dl-3.5-cs229-1.1" class="section level2">
-<h2><strong>conditional probability (DL 3.5, CS229 1.1)</strong></h2>
-<p><span class="math display">\[
-P(Y = y | X = x) = \frac{P(Y = y, X = x)}{P(X = x)}
-\]</span> From the above definition, the conditional probability is only defined when <span class="math inline">\(P(X=x)&gt;0\)</span>, i.e. the conditional probability cannot be computed on an event that never happens. Two events are <strong><em>independent</em></strong> iff <span class="math inline">\(P(y,x) = P(y)P(x)\)</span>, or equivalently, <span class="math inline">\(P(y|x) = P(y)\)</span>. That is, independence is equivalent to saying that observing <span class="math inline">\(x\)</span> does not have any effect on the probability of <span class="math inline">\(y\)</span>.</p>
+<div id="conditional-probability-dl-3.5-cs229-1.1-3.4" class="section level2">
+<h2><strong>conditional probability (DL 3.5, CS229 1.1, 3.4)</strong></h2>
+<p>In the discrete case, the <strong><em>conditional probability mass function</em></strong> of <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span> is: <span class="math display">\[
+P(Y = y \mid X = x) = \frac{P(Y = y, X = x)}{P(X = x)}
+\]</span> From the above definition, the conditional probability is only defined when <span class="math inline">\(P(X=x)&gt;0\)</span>, i.e. the conditional probability cannot be computed on an event that never happens. Two events are <strong><em>independent</em></strong> iff <span class="math inline">\(P(y,x) = P(y)P(x)\)</span>, or equivalently, <span class="math inline">\(P(y \mid x) = P(y)\)</span>. That is, independence is equivalent to saying that observing <span class="math inline">\(x\)</span> does not have any effect on the probability of <span class="math inline">\(y\)</span>.</p>
+<p>In the continuous case, the situation is technically more complicated because the probability that a continuous random variable <span class="math inline">\(X\)</span> takes on a specific value <span class="math inline">\(x\)</span> is zero. Ignoring this technical point, we define, by analogy to the discrete case, the <strong><em>conditional probability density</em></strong> of <span class="math inline">\(Y\)</span> given <span class="math inline">\(X=x\)</span> to be: <span class="math display">\[
+f_{Y \mid X}(y \mid x) = \frac{f_{XY}(x,y)}{f_X(x)}
+\]</span> provided <span class="math inline">\(f_X(x) \neq 0\)</span>.</p>
 </div>
 <div id="chain-rule-of-conditional-probabilities-dl-3.6" class="section level2">
 <h2><strong>chain rule of conditional probabilities (DL 3.6)</strong></h2>
@@ -229,6 +232,19 @@ P(Y = y | X = x) = \frac{P(Y = y, X = x)}{P(X = x)}
 &amp; = \dots \\
 &amp; = P(X_1) \prod_{i=2}^n P(X_i | X_1, \dots, X_{i-1})
 \end{align}
+\]</span> For example, <span class="math display">\[
+\begin{align}
+P(a,b,c)  &amp; = P(a \mid b,c) P(b,c) \\
+          &amp; = P(a \mid b,c) P(b \mid c) P(c) \\
+\end{align}
+\]</span></p>
+</div>
+<div id="bayes-rule-cs229-3.5-dl-3.11" class="section level2">
+<h2><strong>Bayes’ rule (CS229 3.5, DL 3.11)</strong></h2>
+<p>For discrete random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>: <span class="math display">\[
+P_{Y \mid X}(y \mid x) = \frac{P_{XY}(x,y)}{P_X(x)} = \frac{P_{X \mid Y}(x \mid y)}{\sum_{y^\prime \in \text{Val}(Y)} P_{X \mid Y}(x \mid y^\prime) P_Y(y^\prime)}
+\]</span> For continuous random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>: <span class="math display">\[
+f_{Y \mid X}(y \mid x) = \frac{f_{XY}(x,y)}{f_X(x)} = \frac{f_{X \mid Y}(x \mid y)f_Y(y)}{\int_{- \infty}^\infty f_{X \mid Y}(x \mid y^\prime) f_Y(y^\prime)dy^\prime}
 \]</span></p>
 </div>
 <div id="independence-and-conditional-independence-dl-3.7" class="section level2">
@@ -236,40 +252,40 @@ P(Y = y | X = x) = \frac{P(Y = y, X = x)}{P(X = x)}
 <p>Two random variables <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are <strong><em>independent</em></strong> if their probability distribution can be expressed as a product of two factors, one involving only <span class="math inline">\(x\)</span> and one involving only <span class="math inline">\(y\)</span>: <span class="math display">\[
 \forall x \in X, y \in Y, \quad p(X=x,Y=y) = p(X=x)p(Y=y)
 \]</span></p>
-<p>Two random variables are <strong><em>conditionally independent</em></strong> given a random variable <span class="math inline">\(z\)</span> if the conditional probability distribution over <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> factorized in this way for every value of <span class="math inline">\(z\)</span>: <span class="math display">\[
-\forall x \in X, y \in Y, z \in Z, \quad p(X=x,Y=y,Z=z) = p(X=x|Z=z)p(Y=y|Z=z)
+<p>Two random variables are <strong><em>conditionally independent</em></strong> given a random variable <span class="math inline">\(z\)</span> if the conditional probability distribution over <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> factorizes in this way for every value of <span class="math inline">\(z\)</span>: <span class="math display">\[
+\forall x \in X, y \in Y, z \in Z, \quad p(X=x,Y=y,Z=z) = p(X=x \mid Z=z)p(Y=y \mid Z=z)
 \]</span></p>
-<p>Independence can be denoted shorthand: <span class="math inline">\(X \perp Y\)</span> indicates that <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are independent, while <span class="math inline">\(X \perp Y | Z\)</span> means that <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are condionally independent given <span class="math inline">\(Z\)</span>.</p>
+<p>Independence can be denoted shorthand: <span class="math inline">\(X \perp Y\)</span> indicates that <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are independent, while <span class="math inline">\(X \perp Y \mid Z\)</span> means that <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are conditionally independent given <span class="math inline">\(Z\)</span>.</p>
 </div>
 <div id="expectation-dl-3.8-cs229-2.4" class="section level2">
 <h2><strong>expectation (DL 3.8, CS229 2.4)</strong></h2>
 <p>The <strong><em>expectation</em></strong> or <strong><em>expected value</em></strong> of some function <span class="math inline">\(f(x)\)</span> with respect to a probability distribution <span class="math inline">\(P(X)\)</span> is the average or mean value that <span class="math inline">\(f\)</span> takes on when <span class="math inline">\(x\)</span> is drawn from <span class="math inline">\(P\)</span>. The expectation can be thought of as a weighted average of the values that <span class="math inline">\(f(x)\)</span> can take on for different values of <span class="math inline">\(x\)</span>, where the weights are given by <span class="math inline">\(P(X)\)</span>. As a special case, the expectation of a random variable itself is found by letting <span class="math inline">\(f(x)=x\)</span>; this is the <strong><em>mean</em></strong> of the random variable <span class="math inline">\(X\)</span>. For discrete variables: <span class="math display">\[
-\mathbb{E}_{X \sim P}[f(x)] = \sum_x P(x)f(x)
+\mathbf{E}_{X \sim P}[f(x)] = \sum_x P(x)f(x)
 \]</span></p>
 <p>while for continuous variables: <span class="math display">\[
-\mathbb{E}_{X \sim p}[f(x)] = \int p(x)f(x)dx
+\mathbf{E}_{X \sim p}[f(x)] = \int p(x)f(x)dx
 \]</span></p>
-<p>When the identity of the distribution is clear from the context, we can omit it and simply write the name of the random variable that the expectation is over, i.e. <span class="math inline">\(\mathbb{E}_X[f(x)]\)</span>. If it is clear which random variable the expectation is over, we can omit the subscript entirely, i.e. <span class="math inline">\(\mathbb{E}[f(x)]\)</span>.</p>
+<p>When the identity of the distribution is clear from the context, we can omit it and simply write the name of the random variable that the expectation is over, i.e. <span class="math inline">\(\mathbf{E}_X \left[f(x) \right]\)</span>. If it is clear which random variable the expectation is over, we can omit the subscript entirely, i.e. <span class="math inline">\(\mathbf{E}[f(x)]\)</span>.</p>
 <p>Properties of the expected value:</p>
 <ul>
-<li><span class="math inline">\(\mathbb{E}[a] = a\)</span> for any constant <span class="math inline">\(a \in \mathbb{R}\)</span></li>
+<li><span class="math inline">\(\mathbf{E}[a] = a\)</span> for any constant <span class="math inline">\(a \in \mathbb{R}\)</span></li>
 <li>Expectations are linear, i.e. <span class="math display">\[
-\mathbb{E}_X[\alpha f(x) + \beta g(x)] = \alpha \mathbb{E}_X[f(x)] + \beta \mathbb{E}_X[g(x)]
+\mathbf{E}_X[\alpha f(x) + \beta g(x)] = \alpha \mathbf{E}_X[f(x)] + \beta \mathbf{E}_X[g(x)]
 \]</span> , when <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> are not dependent on <span class="math inline">\(x\)</span>.</li>
-<li>for a discrete random variable <span class="math inline">\(X\)</span>, <span class="math inline">\(\mathbb{E}[1\{X = k\}] = P(X=k)\)</span></li>
+<li>for a discrete random variable <span class="math inline">\(X\)</span>, <span class="math inline">\(\mathbf{E}[\mathbf{1} \{X = k\}] = P(X=k)\)</span>, where <span class="math inline">\(\mathbf{1}\{\}\)</span> is the indicator function.</li>
 </ul>
 </div>
-<div id="variance-and-covariance-dl-3.8-cs229-2.5" class="section level2">
-<h2><strong>variance and covariance (DL 3.8, CS229 2.5)</strong></h2>
+<div id="variance-and-covariance-dl-3.8-cs229-2.5-3.7" class="section level2">
+<h2><strong>variance and covariance (DL 3.8, CS229 2.5, 3.7)</strong></h2>
 <p>The <strong><em>variance</em></strong> gives a measure of how concentrated the distribution of a random variable <span class="math inline">\(X\)</span> is around its mean: <span class="math display">\[
-\text{Var}(f(x)) = \mathbb{E}\left[ \left( f(x)-\mathbb{E}[f(x) ]\right)^2 \right]
-\]</span> Using the properties of the expected value (namely that expectations are linear and that <span class="math inline">\(\mathbb{E}[X]\)</span> is a constant wrt an outer expectation), we can derive an alternate expression for the variance: <span class="math display">\[
+\text{Var}(f(x)) = \mathbf{E}\left[ \left( f(x)-\mathbf{E}[f(x) ]\right)^2 \right]
+\]</span> Using the properties of the expected value (namely that expectations are linear and that <span class="math inline">\(\mathbf{E}[X]\)</span> is a constant wrt an outer expectation), we can derive an alternate expression for the variance: <span class="math display">\[
 \begin{align}
-\text{Var}[X] &amp; = \mathbb{E}[(X-E[X])^2] \\
-              &amp; = \mathbb{E}[X^2-2X \mathbb{E}[X] + \mathbb{E}^2[X]] \\
-              &amp; = \mathbb{E}[X^2] - 2 \mathbb{E}\left[X \mathbb{E}[X]\right] + \mathbb{E}\left[\mathbb{E}^2[X]\right] \\
-              &amp; = \mathbb{E}[X^2] - 2 \mathbb{E}[X] \mathbb{E}[X] + \mathbb{E}^2[X] \\
-              &amp; = \mathbb{E}[X^2] - \mathbb{E}^2[X]
+\text{Var}[X] &amp; = \mathbf{E}[(X-E[X])^2] \\
+              &amp; = \mathbf{E}[X^2-2X \mathbf{E}[X] + \mathbf{E}^2[X]] \\
+              &amp; = \mathbf{E}[X^2] - 2 \mathbf{E}\left[X \mathbf{E}[X]\right] + \mathbf{E}\left[\mathbf{E}^2[X]\right] \\
+              &amp; = \mathbf{E}[X^2] - 2 \mathbf{E}[X] \mathbf{E}[X] + \mathbf{E}^2[X] \\
+              &amp; = \mathbf{E}[X^2] - \mathbf{E}^2[X]
 \end{align}
 \]</span></p>
 <p>When the variance is low, the values of <span class="math inline">\(f(x)\)</span> cluster near their expected value. The square root of the variance is known as the <strong><em>standard deviation</em></strong>.</p>
@@ -279,14 +295,167 @@ P(Y = y | X = x) = \frac{P(Y = y, X = x)}{P(X = x)}
 <li><span class="math inline">\(\text{Var}[af(x)] = a^2 \text{Var}[f(x)]\)</span> for any constant <span class="math inline">\(a \in \mathbb{R}\)</span></li>
 </ul>
 <p>The <strong><em>covariance</em></strong> gives a sense of how much two values are linearly related to each other, as well as the scale of these variables: <span class="math display">\[
-\text{Cov}(f(x),g(y)) = \mathbb{E} \left[\left(f(x)- \mathbb{E}[f(x)]\right)\left(g(y) - \mathbb{E}[g(y)] \right) \right]
+\text{Cov}(f(x),g(y)) = \mathbf{E} \left[\left(f(x)- \mathbf{E}[f(x)]\right)\left(g(y) - \mathbf{E}[g(y)] \right) \right]
+\]</span> Using an argument similar to that for variance (linearity of expectations and the fact that expectations of constants are just the constants), this can be rewritten as: <span class="math display">\[
+\begin{align}
+\text{Cov}[X,Y] &amp; = \mathbf{E}[(X-\mathbf{E}[X])(Y-\mathbf{E}[Y])] \\
+                &amp; = \mathbf{E}[XY-X\mathbf{E}[Y]-Y\mathbf{E}[X]+ \mathbf{E}[X]\mathbf{E}[Y]] \\
+                &amp; = \mathbf{E}[XY] - \mathbf{E}[X]\mathbf{E}[Y]- \mathbf{E}[Y]\mathbf{E}[X] + \mathbf{E}[X]\mathbf{E}[Y] \\
+                &amp; = \mathbf{E}[XY] - \mathbf{E}[X]\mathbf{E}[Y]
+\end{align}
 \]</span></p>
+<p>Properties of expectation and covariance for two random variables:</p>
+<ul>
+<li>(linearity of expectation) <span class="math inline">\(\mathbf{E}[f(X,Y)+g(X,Y)] = \mathbf{E}[f(X,y)] + \mathbf{E}[g(X,Y)]\)</span></li>
+<li><span class="math inline">\(\text{Var}[X+Y] = \text{Var}[X] + \text{Var}[Y] + 2 \text{Cov}[X,Y]\)</span></li>
+<li>if <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are independent, then <span class="math inline">\(\text{Cov}[X,Y] = 0\)</span></li>
+<li>if <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are independent, then <span class="math inline">\(\mathbf{E}[f(X)g(Y)] = \mathbf{E}[f(X)]\mathbf{E}[g(Y)]\)</span></li>
+</ul>
 <p><strong><em>Correlation</em></strong> normalizes the covariance in order to measure how much the variables are related, without being affected by the scale of the separate variables. Covariance and dependence are related, but distinct. Two variables that are independent have zero covariance, and two variables with non-zero covariance are dependent. However, independence is a stronger requirement than zero covariance, because it excludes nonlinear relationships in addition to the linear relationships specified by zero covariance. Thus, it is possible for two variables to be dependent but have zero covariance.</p>
-<p>The <strong><em>covariance matrix</em></strong> of a vector <span class="math inline">\(x \in \mathbb{R}^n\)</span> is an <span class="math inline">\(n \times n\)</span> matrix, such that <span class="math display">\[
-\text{Cov}(x)_{i,j} = \text{Cov}(x_i, x_j)
-\]</span> The diagonal elements of the covariance give the variance: <span class="math display">\[
-\text{Cov}(x_i,x_i) = \text{Var}(x_i)
+<p>The <strong><em>covariance matrix</em></strong> <span class="math inline">\(\Sigma\)</span> of a random vector <span class="math inline">\(X : \Omega \rightarrow \mathbb{R}^n\)</span> is an <span class="math inline">\(n \times n\)</span> matrix, such that <span class="math display">\[
+\Sigma_{i,j} = \text{Cov}[x_i, x_j]
+\]</span> From the definition of covariance, we have: <span class="math display">\[
+\begin{align}
+\Sigma  &amp; = \begin{bmatrix}
+            \text{Cov}[X_1, X_1]  &amp;   \cdots  &amp; \text{Cov}[X_1, X_n]  \\
+            \vdots                &amp;   \ddots  &amp; \vdots                \\
+            \text{Cov}[X_n, X_1]  &amp;   \cdots  &amp; \text{Cov}[X_n, X_n]
+            \end{bmatrix} \\
+        &amp; = \begin{bmatrix}
+            \mathbf{E}[X_1^2] - \mathbf{E}^2[X_1]  &amp;   \cdots  &amp; \mathbf{E}[X_1X_n] - \mathbf{E}[X_1]\mathbf{E}[X_n]  \\
+            \vdots                &amp;   \ddots  &amp; \vdots                \\
+            \mathbf{E}[X_nX_1] - \mathbf{E}[X_n]\mathbf{E}[X_1]  &amp;   \cdots  &amp; \mathbf{E}[X_n^2] - \mathbf{E}^2[X_n]
+            \end{bmatrix} \\
+        &amp; = \begin{bmatrix}
+            \mathbf{E}[X_1^2]  &amp;   \cdots  &amp; \mathbf{E}[X_1X_n]   \\
+            \vdots             &amp;   \ddots  &amp; \vdots                \\
+            \mathbf{E}[X_nX_1] &amp;   \cdots  &amp; \mathbf{E}[X_n^2]
+            \end{bmatrix} - 
+            \begin{bmatrix}
+            \mathbf{E}[X_1]\mathbf{E}[X_1]  &amp;   \cdots  &amp; \mathbf{E}[X_1]\mathbf{E}[X_n]  \\
+            \vdots             &amp;   \ddots  &amp; \vdots                \\
+            \mathbf{E}[X_n]\mathbf{E}[X_1]  &amp;   \cdots  &amp; \mathbf{E}[X_n]\mathbf{E}[X_n]
+            \end{bmatrix} \\
+        &amp; = \mathbf{E}[XX^T]-\mathbf{E}[X]\mathbf{E}[X]^T \\
+        &amp; = ...\\
+        &amp; = \mathbf{E}[(X-\mathbf{E}[X])(X-\mathbf{E}[X])^T]
+\end{align}
+\]</span> Properties of the covariance matrix:</p>
+<ul>
+<li><span class="math inline">\(\Sigma \succeq 0\)</span>, i.e. <span class="math inline">\(\Sigma\)</span> is positive semidefinite</li>
+<li><span class="math inline">\(\Sigma = \Sigma^T\)</span>, i.e. <span class="math inline">\(\Sigma\)</span> is symmetric</li>
+</ul>
+<p>The diagonal elements of the covariance give the variances: <span class="math display">\[
+\Sigma_{i,i} = \text{Var}(x_i)
 \]</span></p>
+</div>
+<div id="common-discrete-probability-distributions-dl-3.9-cs229-2.6" class="section level2">
+<h2><strong>common discrete probability distributions (DL 3.9, CS229 2.6)</strong></h2>
+<div id="bernoulli-distribution" class="section level3">
+<h3><strong>Bernoulli distribution</strong></h3>
+<p>The Bernoulli distribution is a distribution over a single binary random variable, parameterized by <span class="math inline">\(\phi \in [0,1]\)</span>, which gives the probability of the random variable being equal to 1. It can be thought of as a coin toss where the probability of heads is given by <span class="math inline">\(\phi\)</span>. It is a special case of the binomial distribution with <span class="math inline">\(n=1\)</span>. The Bernoulli distribution has the following properties:</p>
+<ul>
+<li><span class="math inline">\(P(x=1) = \phi\)</span></li>
+<li><span class="math inline">\(P(x=0) = 1- \phi\)</span></li>
+<li><span class="math inline">\(P(X=x) = \phi^x(1-\phi)^{1-x}\)</span></li>
+<li><span class="math inline">\(\mathbf{E}_X[X] = \phi\)</span></li>
+<li><span class="math inline">\(\text{Var}_X(X) = \phi(1-\phi)\)</span></li>
+</ul>
+</div>
+<div id="binomial-distribution" class="section level3">
+<h3><strong>binomial distribution</strong></h3>
+<p><span class="math inline">\(X \sim \text{binomial}(n,p)\)</span> (where <span class="math inline">\(0 \leq p \leq 1\)</span>): the number of heads in <span class="math inline">\(n\)</span> independent flips of a coin with heads probability <span class="math inline">\(p\)</span>: <span class="math display">\[
+p(x) = {n\choose x}p^x(1-p)^{n-x}
+\]</span></p>
+</div>
+<div id="geometric-distribution" class="section level3">
+<h3><strong>geometric distribution</strong></h3>
+<p><span class="math inline">\(X \sim \text{geometric}(p)\)</span> (where <span class="math inline">\(p &gt; 0\)</span>): the number of flips of a coin with heads probability <span class="math inline">\(p\)</span> until the first heads: <span class="math display">\[
+p(x)=p(1-p)^{x-1}
+\]</span></p>
+</div>
+<div id="poisson-distribution" class="section level3">
+<h3><strong>Poisson distribution</strong></h3>
+<p><span class="math inline">\(X \sim \text{Poisson}(\lambda)\)</span> (where <span class="math inline">\(\lambda &gt; 0\)</span>): a probability distribution over the nonnegatve integers used for modeling the frequency of rare events. <span class="math display">\[
+p(x) = e^{-\lambda} \frac{\lambda^x}{x!}
+\]</span></p>
+</div>
+</div>
+<div id="common-continuous-probability-distributions-dl-3.9-cs229-2.6" class="section level2">
+<h2><strong>common continuous probability distributions (DL 3.9, CS229 2.6)</strong></h2>
+<div id="uniform-distribution" class="section level3">
+<h3><strong>uniform distribution</strong></h3>
+<p><span class="math inline">\(X \sim \text{uniform}(a,b)\)</span> (where <span class="math inline">\(a &lt; b\)</span>): equal probability density to every value between <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> on the real line. <span class="math display">\[
+f(x) =  \begin{cases}
+        \frac{1}{b-a} &amp; \text{if } a \leq x \leq b \\
+        0 &amp; \text{otherwise}
+        \end{cases}
+\]</span></p>
+</div>
+<div id="exponential-distribution" class="section level3">
+<h3><strong>exponential distribution</strong></h3>
+<p><span class="math inline">\(X \sim \text{exponential}(\lambda)\)</span> (where <span class="math inline">\(\lambda &gt; 0\)</span>): decaying probability density over the nonnegative reals. <span class="math display">\[
+f(x) =  \begin{cases}
+        \lambda e^{-\lambda x} &amp; \text{if } x \geq 0 \\
+        0 &amp; \text{otherwise}
+        \end{cases}
+\]</span></p>
+</div>
+<div id="normal-gaussian-distribution" class="section level3">
+<h3><strong>normal (Gaussian) distribution</strong></h3>
+<p><span class="math inline">\(X \sim \text{normal}(\mu, \sigma^2)\)</span>: <span class="math display">\[
+f(x) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{1}{2 \sigma^2}(x-\mu)^2}
+\]</span></p>
+</div>
+</div>
+<div id="useful-properties-of-common-functions-dl-3.10" class="section level2">
+<h2><strong>useful properties of common functions (DL 3.10)</strong></h2>
+<div id="logistic-sigmoid" class="section level3">
+<h3><strong>logistic sigmoid</strong></h3>
+<p><span class="math display">\[
+\sigma(x) = \frac{1}{1+\exp(-x)}
+\]</span> <img src="data:image/png;base64,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" width="288" style="display: block; margin: auto;" /></p>
+<p>The logistic sigmoid is commonly used to produce the <span class="math inline">\(\phi\)</span> parameter of a Bernoulli distribution because its range is (0,1), which lies within the valid range of values for the <span class="math inline">\(\phi\)</span> parameter. The sigmoid function saturates when its argument is very positive or very negative, meaning that the function becomes very flat and insensitive to small changes in its input.</p>
+</div>
+<div id="softplus" class="section level3">
+<h3><strong>softplus</strong></h3>
+<p><span class="math display">\[
+\zeta(x) = \log(1+\exp(x))
+\]</span></p>
+<p><img src="data:image/png;base64,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" width="288" style="display: block; margin: auto;" /></p>
+<p>The softplus function can be useful for producing the <span class="math inline">\(\beta\)</span> or <span class="math inline">\(\sigma\)</span> parameter of a normal distribution because its range is <span class="math inline">\(0, \infty\)</span>. It also arises commonly when manipulating expressions involving sigmoids. The name ‘softplus’ comes from the fact that it is a smoothed vesion of <span class="math inline">\(x^+ = \max(0,x)\)</span>.</p>
+<p>Useful properties of the logistic sigmoid and softplus functions:</p>
+<ul>
+<li><span class="math inline">\(\sigma(x) = \frac{\exp(x)}{\exp(x)+\exp(0)}\)</span></li>
+<li><span class="math inline">\(\frac{d}{dx} \sigma(x) = \sigma(x)(1-\sigma(x))\)</span></li>
+<li><span class="math inline">\(1-\sigma(x) = \sigma(-x)\)</span></li>
+<li><span class="math inline">\(\log \sigma(x) = - \zeta(-x)\)</span></li>
+<li><span class="math inline">\(\frac{d}{dx}\zeta(x) = \sigma(x)\)</span></li>
+<li><span class="math inline">\(\forall x \in (0,1), \sigma^{-1} = \log(\frac{x}{1-x})\)</span></li>
+<li><span class="math inline">\(\forall x &gt; 0, \zeta^{-1}(x) = \log(\exp(x)-1)\)</span></li>
+<li><span class="math inline">\(\zeta(x) = \int_{-\infty}^x \sigma(y)dy\)</span></li>
+<li><span class="math inline">\(\zeta(x)-\zeta(-x) x\)</span></li>
+</ul>
+<p>The function <span class="math inline">\(\sigma^{-1}(x)\)</span> is called the <strong><em>logit</em></strong> in statistics.</p>
+<p><strong><em>information theory</em></strong></p>
+<p><strong>Information theory</strong>- a branch of applied math revolving around quantifying how much information is present in a signal.</p>
+<p>The basic intuition: learning that an unlikely event has occurred is more informative than learning that a likely event has occurred. (E.g., “The sun rose this morning” is uninformative, but “There was a solar eclipse this morning” is informative.)</p>
+<p>Quantify information in a way that formalizes this intuition:</p>
+<ul>
+<li>Likely events should have low information content. Events that are guaranteed to happen should have no information content.</li>
+<li>Less likely events should have greater information content.</li>
+<li>Independent events should have additive information. E.g., finding out that a tossed coin has come up as heads twice should convey twice as much information as finding out that a tossed coin has come up heads once.</li>
+</ul>
+<p>A function which satisfies these properties is the <strong><em>self-information</em></strong> of an event <span class="math inline">\(X=x\)</span>: <span class="math display">\[
+I(x) = -\log P(x)
+\]</span> Using the base <span class="math inline">\(e\)</span> logarithm, as above, information is in units of <strong><em>nats</em></strong>. Using the base <span class="math inline">\(2\)</span> logarithm, information is in units of <strong><em>bits</em></strong> or <strong><em>shannons</em></strong>.</p>
+<p>Self-information deals only with a single outcome. The amount of uncertainty in an entire probability distribution is quantified using the <strong><em>Shannon entropy</em></strong>: <span class="math display">\[
+H(x)= \mathbf{E}_{X \sim P}[I(x)] = -\mathbf{E}_{X \sim P}[\log P(x)]
+\]</span> The Shannon entropy is the expected amount of information in an event drawn from that distribution. It gives a lower bound on the information needed on average to encode symbols drawn from a distribution <span class="math inline">\(P\)</span>. When <span class="math inline">\(X\)</span> is continuous, the Shannon entropy is known as the <strong><em>differential entropy</em></strong>.</p>
+<p>If we have two separate probability distributions <span class="math inline">\(P(X)\)</span> and <span class="math inline">\(Q(X)\)</span> over the same random variable <span class="math inline">\(X\)</span>, we can measure how different these two distributions are using the <strong><em>Kullback-Leibler (KL) divergence</em></strong>: <span class="math display">\[
+D_{KL}(P \parallel Q) = \mathbf{E}_{X \sim P}\left[\log \frac{P(x)}{Q(x)}\right] = \mathbf{E}_{X \sim P}[\log P(x)- \log Q(x)]
+\]</span></p>
+</div>
 </div>
 </div>
 

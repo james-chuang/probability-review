@@ -7,6 +7,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
 ```
 
 # **probability and information theory**
@@ -22,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 Machine learning must always deal with uncertain quantities, and sometimes may need to deal with stochastic quantities. There are three possible sources of uncertainty:
 
 - Inherent stochasticity in the system being modeled. (e.g. quantum mechanics or randomly shuffled cards.)
-- Incomplete observabiity. Deterministic systems can appear stochastic when we cannot observe all of the variables that drive the behavior of the system.
+- Incomplete observability. Deterministic systems can appear stochastic when we cannot observe all of the variables that drive the behavior of the system.
 - Incomplete modeling. Models necessarily discard some of the observed information, resulting in uncertainty in the model's predictions.
 
 Two ways of thinking about probability:
@@ -109,16 +110,23 @@ Sometimes we know the probability distribution over a set of variables and we wa
 $$
 \forall x \in X, P(X =x) = \sum_y P(X=x, Y=y)
 $$
-For continuous variables, summation is replace with integration:
+For continuous variables, summation is replaced with integration:
 $$
 p(x) = \int p(x,y)dy
 $$
 
-## **conditional probability (DL 3.5, CS229 1.1)**
+## **conditional probability (DL 3.5, CS229 1.1, 3.4)**
+In the discrete case, the ***conditional probability mass function*** of $Y$ given $X$ is:
 $$
-P(Y = y | X = x) = \frac{P(Y = y, X = x)}{P(X = x)}
+P(Y = y \mid X = x) = \frac{P(Y = y, X = x)}{P(X = x)}
 $$
-From the above definition, the conditional probability is only defined when $P(X=x)>0$, i.e. the conditional probability cannot be computed on an event that never happens. Two events are ***independent*** iff $P(y,x) = P(y)P(x)$, or equivalently, $P(y|x) = P(y)$. That is, independence is equivalent to saying that observing $x$ does not have any effect on the probability of $y$.
+From the above definition, the conditional probability is only defined when $P(X=x)>0$, i.e. the conditional probability cannot be computed on an event that never happens. Two events are ***independent*** iff $P(y,x) = P(y)P(x)$, or equivalently, $P(y \mid x) = P(y)$. That is, independence is equivalent to saying that observing $x$ does not have any effect on the probability of $y$.
+
+In the continuous case, the situation is technically more complicated because the probability that a continuous random variable $X$ takes on a specific value $x$ is zero. Ignoring this technical point, we define, by analogy to the discrete case, the ***conditional probability density*** of $Y$ given $X=x$ to be:
+$$
+f_{Y \mid X}(y \mid x) = \frac{f_{XY}(x,y)}{f_X(x)}
+$$
+provided $f_X(x) \neq 0$.
 
 ## **chain rule of conditional probabilities (DL 3.6)**
 Any joint probability distribution over many random variables may be decomposed into conditional distributions over only one variable. This follows directly from the above definition of conditional probabilities:
@@ -131,6 +139,23 @@ $$
 & = P(X_1) \prod_{i=2}^n P(X_i | X_1, \dots, X_{i-1})
 \end{align}
 $$
+For example,
+$$
+\begin{align}
+P(a,b,c)  & = P(a \mid b,c) P(b,c) \\
+          & = P(a \mid b,c) P(b \mid c) P(c) \\
+\end{align}
+$$
+
+## **Bayes' rule (CS229 3.5, DL 3.11)**
+For discrete random variables $X$ and $Y$:
+$$
+P_{Y \mid X}(y \mid x) = \frac{P_{XY}(x,y)}{P_X(x)} = \frac{P_{X \mid Y}(x \mid y)}{\sum_{y^\prime \in \text{Val}(Y)} P_{X \mid Y}(x \mid y^\prime) P_Y(y^\prime)}
+$$
+For continuous random variables $X$ and $Y$:
+$$
+f_{Y \mid X}(y \mid x) = \frac{f_{XY}(x,y)}{f_X(x)} = \frac{f_{X \mid Y}(x \mid y)f_Y(y)}{\int_{- \infty}^\infty f_{X \mid Y}(x \mid y^\prime) f_Y(y^\prime)dy^\prime}
+$$
 
 ## **independence and conditional independence (DL 3.7)**
 Two random variables $x$ and $y$ are ***independent*** if their probability distribution can be expressed as a product of two factors, one involving only $x$ and one involving only $y$:
@@ -138,50 +163,50 @@ $$
 \forall x \in X, y \in Y, \quad p(X=x,Y=y) = p(X=x)p(Y=y)
 $$
 
-Two random variables are ***conditionally independent*** given a random variable $z$ if the conditional probability distribution over $x$ and $y$ factorized in this way for every value of $z$:
+Two random variables are ***conditionally independent*** given a random variable $z$ if the conditional probability distribution over $x$ and $y$ factorizes in this way for every value of $z$:
 $$
-\forall x \in X, y \in Y, z \in Z, \quad p(X=x,Y=y,Z=z) = p(X=x|Z=z)p(Y=y|Z=z)
+\forall x \in X, y \in Y, z \in Z, \quad p(X=x,Y=y,Z=z) = p(X=x \mid Z=z)p(Y=y \mid Z=z)
 $$
 
-Independence can be denoted shorthand: $X \perp Y$ indicates that $X$ and $Y$ are independent, while $X \perp Y | Z$ means that $X$ and $Y$ are condionally independent given $Z$.
+Independence can be denoted shorthand: $X \perp Y$ indicates that $X$ and $Y$ are independent, while $X \perp Y \mid Z$ means that $X$ and $Y$ are conditionally independent given $Z$.
 
 ## **expectation (DL 3.8, CS229 2.4)**
 The ***expectation*** or ***expected value*** of some function $f(x)$ with respect to a probability distribution $P(X)$ is the average or mean value that $f$ takes on when $x$ is drawn from $P$. The expectation can be thought of as a weighted average of the values that $f(x)$ can take on for different values of $x$, where the weights are given by $P(X)$. As a special case, the expectation of a random variable itself is found by letting $f(x)=x$; this is the ***mean*** of the random variable $X$.
 For discrete variables:
 $$
-\mathbb{E}_{X \sim P}[f(x)] = \sum_x P(x)f(x)
+\mathbf{E}_{X \sim P}[f(x)] = \sum_x P(x)f(x)
 $$
 
 while for continuous variables:
 $$
-\mathbb{E}_{X \sim p}[f(x)] = \int p(x)f(x)dx
+\mathbf{E}_{X \sim p}[f(x)] = \int p(x)f(x)dx
 $$
 
-When the identity of the distribution is clear from the context, we can omit it and simply write the name of the random variable that the expectation is over, i.e. $\mathbb{E}_X[f(x)]$. If it is clear which random variable the expectation is over, we can omit the subscript entirely, i.e. $\mathbb{E}[f(x)]$.
+When the identity of the distribution is clear from the context, we can omit it and simply write the name of the random variable that the expectation is over, i.e. $\mathbf{E}_X \left[f(x) \right]$. If it is clear which random variable the expectation is over, we can omit the subscript entirely, i.e. $\mathbf{E}[f(x)]$.
 
 Properties of the expected value:
 
-- $\mathbb{E}[a] = a$ for any constant $a \in \mathbb{R}$
+- $\mathbf{E}[a] = a$ for any constant $a \in \mathbb{R}$
 - Expectations are linear, i.e.
 $$
-\mathbb{E}_X[\alpha f(x) + \beta g(x)] = \alpha \mathbb{E}_X[f(x)] + \beta \mathbb{E}_X[g(x)]
+\mathbf{E}_X[\alpha f(x) + \beta g(x)] = \alpha \mathbf{E}_X[f(x)] + \beta \mathbf{E}_X[g(x)]
 $$
 , when $\alpha$ and $\beta$ are not dependent on $x$.
-- for a discrete random variable $X$, $\mathbb{E}[1\{X = k\}] = P(X=k)$
+- for a discrete random variable $X$, $\mathbf{E}[\mathbf{1} \{X = k\}] = P(X=k)$, where $\mathbf{1}\{\}$ is the indicator function.
 
-## **variance and covariance (DL 3.8, CS229 2.5)**
+## **variance and covariance (DL 3.8, CS229 2.5, 3.7)**
 The ***variance*** gives a measure of how concentrated the distribution of a random variable $X$ is around its mean:
 $$
-\text{Var}(f(x)) = \mathbb{E}\left[ \left( f(x)-\mathbb{E}[f(x) ]\right)^2 \right]
+\text{Var}(f(x)) = \mathbf{E}\left[ \left( f(x)-\mathbf{E}[f(x) ]\right)^2 \right]
 $$
-Using the properties of the expected value (namely that expectations are linear and that $\mathbb{E}[X]$ is a constant wrt an outer expectation), we can derive an alternate expression for the variance:
+Using the properties of the expected value (namely that expectations are linear and that $\mathbf{E}[X]$ is a constant wrt an outer expectation), we can derive an alternate expression for the variance:
 $$
 \begin{align}
-\text{Var}[X] & = \mathbb{E}[(X-E[X])^2] \\
-              & = \mathbb{E}[X^2-2X \mathbb{E}[X] + \mathbb{E}^2[X]] \\
-              & = \mathbb{E}[X^2] - 2 \mathbb{E}\left[X \mathbb{E}[X]\right] + \mathbb{E}\left[\mathbb{E}^2[X]\right] \\
-              & = \mathbb{E}[X^2] - 2 \mathbb{E}[X] \mathbb{E}[X] + \mathbb{E}^2[X] \\
-              & = \mathbb{E}[X^2] - \mathbb{E}^2[X]
+\text{Var}[X] & = \mathbf{E}[(X-E[X])^2] \\
+              & = \mathbf{E}[X^2-2X \mathbf{E}[X] + \mathbf{E}^2[X]] \\
+              & = \mathbf{E}[X^2] - 2 \mathbf{E}\left[X \mathbf{E}[X]\right] + \mathbf{E}\left[\mathbf{E}^2[X]\right] \\
+              & = \mathbf{E}[X^2] - 2 \mathbf{E}[X] \mathbf{E}[X] + \mathbf{E}^2[X] \\
+              & = \mathbf{E}[X^2] - \mathbf{E}^2[X]
 \end{align}
 $$
 
@@ -194,16 +219,193 @@ Properties of the variance:
 
 The ***covariance*** gives a sense of how much two values are linearly related to each other, as well as the scale of these variables:
 $$
-\text{Cov}(f(x),g(y)) = \mathbb{E} \left[\left(f(x)- \mathbb{E}[f(x)]\right)\left(g(y) - \mathbb{E}[g(y)] \right) \right]
+\text{Cov}(f(x),g(y)) = \mathbf{E} \left[\left(f(x)- \mathbf{E}[f(x)]\right)\left(g(y) - \mathbf{E}[g(y)] \right) \right]
 $$
+Using an argument similar to that for variance (linearity of expectations and the fact that expectations of constants are just the constants), this can be rewritten as:
+$$
+\begin{align}
+\text{Cov}[X,Y] & = \mathbf{E}[(X-\mathbf{E}[X])(Y-\mathbf{E}[Y])] \\
+                & = \mathbf{E}[XY-X\mathbf{E}[Y]-Y\mathbf{E}[X]+ \mathbf{E}[X]\mathbf{E}[Y]] \\
+                & = \mathbf{E}[XY] - \mathbf{E}[X]\mathbf{E}[Y]- \mathbf{E}[Y]\mathbf{E}[X] + \mathbf{E}[X]\mathbf{E}[Y] \\
+                & = \mathbf{E}[XY] - \mathbf{E}[X]\mathbf{E}[Y]
+\end{align}
+$$
+
+Properties of expectation and covariance for two random variables:
+
+- (linearity of expectation) $\mathbf{E}[f(X,Y)+g(X,Y)] = \mathbf{E}[f(X,y)] + \mathbf{E}[g(X,Y)]$
+- $\text{Var}[X+Y] = \text{Var}[X] + \text{Var}[Y] + 2 \text{Cov}[X,Y]$
+- if $X$ and $Y$ are independent, then $\text{Cov}[X,Y] = 0$
+- if $X$ and $Y$ are independent, then $\mathbf{E}[f(X)g(Y)] = \mathbf{E}[f(X)]\mathbf{E}[g(Y)]$
 
 ***Correlation*** normalizes the covariance in order to measure how much the variables are related, without being affected by the scale of the separate variables. Covariance and dependence are related, but distinct. Two variables that are independent have zero covariance, and two variables with non-zero covariance are dependent. However, independence is a stronger requirement than zero covariance, because it excludes nonlinear relationships in addition to the linear relationships specified by zero covariance. Thus, it is possible for two variables to be dependent but have zero covariance.
 
-The ***covariance matrix*** of a vector $x \in \mathbb{R}^n$ is an $n \times n$ matrix, such that
+The ***covariance matrix*** $\Sigma$ of a random vector $X : \Omega \rightarrow \mathbb{R}^n$ is an $n \times n$ matrix, such that
 $$
-\text{Cov}(x)_{i,j} = \text{Cov}(x_i, x_j)
+\Sigma_{i,j} = \text{Cov}[x_i, x_j]
 $$
-The diagonal elements of the covariance give the variance:
+From the definition of covariance, we have:
 $$
-\text{Cov}(x_i,x_i) = \text{Var}(x_i)
+\begin{align}
+\Sigma  & = \begin{bmatrix}
+            \text{Cov}[X_1, X_1]  &   \cdots  & \text{Cov}[X_1, X_n]  \\
+            \vdots                &   \ddots  & \vdots                \\
+            \text{Cov}[X_n, X_1]  &   \cdots  & \text{Cov}[X_n, X_n]
+            \end{bmatrix} \\
+        & = \begin{bmatrix}
+            \mathbf{E}[X_1^2] - \mathbf{E}^2[X_1]  &   \cdots  & \mathbf{E}[X_1X_n] - \mathbf{E}[X_1]\mathbf{E}[X_n]  \\
+            \vdots                &   \ddots  & \vdots                \\
+            \mathbf{E}[X_nX_1] - \mathbf{E}[X_n]\mathbf{E}[X_1]  &   \cdots  & \mathbf{E}[X_n^2] - \mathbf{E}^2[X_n]
+            \end{bmatrix} \\
+        & = \begin{bmatrix}
+            \mathbf{E}[X_1^2]  &   \cdots  & \mathbf{E}[X_1X_n]   \\
+            \vdots             &   \ddots  & \vdots                \\
+            \mathbf{E}[X_nX_1] &   \cdots  & \mathbf{E}[X_n^2]
+            \end{bmatrix} - 
+            \begin{bmatrix}
+            \mathbf{E}[X_1]\mathbf{E}[X_1]  &   \cdots  & \mathbf{E}[X_1]\mathbf{E}[X_n]  \\
+            \vdots             &   \ddots  & \vdots                \\
+            \mathbf{E}[X_n]\mathbf{E}[X_1]  &   \cdots  & \mathbf{E}[X_n]\mathbf{E}[X_n]
+            \end{bmatrix} \\
+        & = \mathbf{E}[XX^T]-\mathbf{E}[X]\mathbf{E}[X]^T \\
+        & = ...\\
+        & = \mathbf{E}[(X-\mathbf{E}[X])(X-\mathbf{E}[X])^T]
+\end{align}
 $$
+Properties of the covariance matrix:
+
+- $\Sigma \succeq 0$, i.e. $\Sigma$ is positive semidefinite
+- $\Sigma = \Sigma^T$, i.e. $\Sigma$ is symmetric
+
+The diagonal elements of the covariance give the variances:
+$$
+\Sigma_{i,i} = \text{Var}(x_i)
+$$
+
+## **common discrete probability distributions (DL 3.9, CS229 2.6)**
+
+### **Bernoulli distribution**
+The Bernoulli distribution is a distribution over a single binary random variable, parameterized by $\phi \in [0,1]$, which gives the probability of the random variable being equal to 1. It can be thought of as a coin toss where the probability of heads is given by $\phi$. It is a special case of the binomial distribution with $n=1$. The Bernoulli distribution has the following properties:
+
+- $P(x=1) = \phi$
+- $P(x=0) = 1- \phi$
+- $P(X=x) = \phi^x(1-\phi)^{1-x}$
+- $\mathbf{E}_X[X] = \phi$
+- $\text{Var}_X(X) = \phi(1-\phi)$
+
+### **binomial distribution**
+$X \sim \text{binomial}(n,p)$ (where $0 \leq p \leq 1$): the number of heads in $n$ independent flips of a coin with heads probability $p$:
+$$
+p(x) = {n\choose x}p^x(1-p)^{n-x}
+$$
+
+### **geometric distribution**
+$X \sim \text{geometric}(p)$ (where $p > 0$): the number of flips of a coin with heads probability $p$ until the first heads:
+$$
+p(x)=p(1-p)^{x-1}
+$$
+
+### **Poisson distribution**
+$X \sim \text{Poisson}(\lambda)$ (where $\lambda > 0$): a probability distribution over the nonnegatve integers used for modeling the frequency of rare events.
+$$
+p(x) = e^{-\lambda} \frac{\lambda^x}{x!}
+$$
+
+## **common continuous probability distributions (DL 3.9, CS229 2.6)**
+
+### **uniform distribution**
+$X \sim \text{uniform}(a,b)$ (where $a < b$): equal probability density to every value between $a$ and $b$ on the real line.
+$$
+f(x) =  \begin{cases}
+        \frac{1}{b-a} & \text{if } a \leq x \leq b \\
+        0 & \text{otherwise}
+        \end{cases}
+$$
+
+### **exponential distribution**
+$X \sim \text{exponential}(\lambda)$ (where $\lambda > 0$): decaying probability density over the nonnegative reals.
+$$
+f(x) =  \begin{cases}
+        \lambda e^{-\lambda x} & \text{if } x \geq 0 \\
+        0 & \text{otherwise}
+        \end{cases}
+$$
+
+### **normal (Gaussian) distribution**
+$X \sim \text{normal}(\mu, \sigma^2)$:
+$$
+f(x) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{1}{2 \sigma^2}(x-\mu)^2}
+$$
+
+## **useful properties of common functions (DL 3.10)**
+
+### **logistic sigmoid**
+$$
+\sigma(x) = \frac{1}{1+\exp(-x)}
+$$
+```{r echo=FALSE, fig.width = 3, fig.asp=.6, fig.align='center'}
+sigmoid = function(x){1/(1+exp(-x))}
+ggplot(data.frame(x=c(-5,5)), aes(x)) +
+  stat_function(fun=sigmoid) +
+  xlab("x") + ylab(expression(sigma))
+```
+
+The logistic sigmoid is commonly used to produce the $\phi$ parameter of a Bernoulli distribution because its range is (0,1), which lies within the valid range of values for the $\phi$ parameter. The sigmoid function saturates when its argument is very positive or very negative, meaning that the function becomes very flat and insensitive to small changes in its input.
+
+### **softplus**
+$$
+\zeta(x) = \log(1+\exp(x))
+$$
+
+```{r echo=FALSE, fig.width = 3, fig.asp=.6, fig.align='center'}
+softplus = function(x){log(1+exp(x))}
+ggplot(data.frame(x=c(-5,5)), aes(x)) +
+  stat_function(fun=softplus) +
+  xlab("x") + ylab(expression(zeta))
+```
+
+The softplus function can be useful for producing the $\beta$ or $\sigma$ parameter of a normal distribution because its range is $0, \infty$. It also arises commonly when manipulating expressions involving sigmoids. The name 'softplus' comes from the fact that it is a smoothed vesion of $x^+ = \max(0,x)$.
+
+Useful properties of the logistic sigmoid and softplus functions:
+
+- $\sigma(x) = \frac{\exp(x)}{\exp(x)+\exp(0)}$
+- $\frac{d}{dx} \sigma(x) = \sigma(x)(1-\sigma(x))$
+- $1-\sigma(x) = \sigma(-x)$
+- $\log \sigma(x) = - \zeta(-x)$
+- $\frac{d}{dx}\zeta(x) = \sigma(x)$
+- $\forall x \in (0,1), \sigma^{-1} = \log(\frac{x}{1-x})$
+- $\forall x > 0, \zeta^{-1}(x) = \log(\exp(x)-1)$
+- $\zeta(x) = \int_{-\infty}^x \sigma(y)dy$
+- $\zeta(x)-\zeta(-x) x$
+
+The function $\sigma^{-1}(x)$ is called the ***logit*** in statistics.
+
+***information theory***
+
+**Information theory**- a branch of applied math revolving around quantifying how much information is present in a signal.
+
+The basic intuition: learning that an unlikely event has occurred is more informative than learning that a likely event has occurred. (E.g., "The sun rose this morning" is uninformative, but "There was a solar eclipse this morning" is informative.)
+
+Quantify information in a way that formalizes this intuition:
+
+- Likely events should have low information content. Events that are guaranteed to happen should have no information content.
+- Less likely events should have greater information content.
+- Independent events should have additive information. E.g., finding out that a tossed coin has come up as heads twice should convey twice as much information as finding out that a tossed coin has come up heads once.
+
+A function which satisfies these properties is the ***self-information*** of an event $X=x$:
+$$
+I(x) = -\log P(x)
+$$
+Using the base $e$ logarithm, as above, information is in units of ***nats***. Using the base $2$ logarithm, information is in units of ***bits*** or ***shannons***.
+
+Self-information deals only with a single outcome. The amount of uncertainty in an entire probability distribution is quantified using the ***Shannon entropy***:
+$$
+H(x)= \mathbf{E}_{X \sim P}[I(x)] = -\mathbf{E}_{X \sim P}[\log P(x)]
+$$
+The Shannon entropy is the expected amount of information in an event drawn from that distribution. It gives a lower bound on the information needed on average to encode symbols drawn from a distribution $P$. When $X$ is continuous, the Shannon entropy is known as the ***differential entropy***.
+
+If we have two separate probability distributions $P(X)$ and $Q(X)$ over the same random variable $X$, we can measure how different these two distributions are using the ***Kullback-Leibler (KL) divergence***:
+$$
+D_{KL}(P \parallel Q) = \mathbf{E}_{X \sim P}\left[\log \frac{P(x)}{Q(x)}\right] = \mathbf{E}_{X \sim P}[\log P(x)- \log Q(x)]
+$$
+
