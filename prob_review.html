@@ -120,8 +120,7 @@ $(document).ready(function () {
 </div>
 
 
-<div id="probability-and-information-theory" class="section level1">
-<h1><strong>probability and information theory</strong></h1>
+<p>My notes reviewing probability and information theory, combining information from the <a href="http://cs229.stanford.edu/section/cs229-prob.pdf">Stanford CS229 probability theory notes</a> and the Chapter 3 of the <a href="http://www.deeplearningbook.org/">Deep Learning Book</a>. Again, most of the material is directly transcribed from these sources. Note that the two sources use slightly different notation, and I haven’t been bothered to make everything consistent.</p>
 <p><strong><em>Probability theory</em></strong></p>
 <ul>
 <li>a mathematical framework for representing uncertain statements</li>
@@ -437,7 +436,10 @@ f(x) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{1}{2 \sigma^2}(x-\mu)^2}
 <li><span class="math inline">\(\zeta(x)-\zeta(-x) x\)</span></li>
 </ul>
 <p>The function <span class="math inline">\(\sigma^{-1}(x)\)</span> is called the <strong><em>logit</em></strong> in statistics.</p>
-<p><strong><em>information theory</em></strong></p>
+</div>
+</div>
+<div id="information-theory" class="section level1">
+<h1><strong><em>information theory</em></strong></h1>
 <p><strong>Information theory</strong>- a branch of applied math revolving around quantifying how much information is present in a signal.</p>
 <p>The basic intuition: learning that an unlikely event has occurred is more informative than learning that a likely event has occurred. (E.g., “The sun rose this morning” is uninformative, but “There was a solar eclipse this morning” is informative.)</p>
 <p>Quantify information in a way that formalizes this intuition:</p>
@@ -454,9 +456,10 @@ H(x)= \mathbf{E}_{X \sim P}[I(x)] = -\mathbf{E}_{X \sim P}[\log P(x)]
 \]</span> The Shannon entropy is the expected amount of information in an event drawn from that distribution. It gives a lower bound on the information needed on average to encode symbols drawn from a distribution <span class="math inline">\(P\)</span>. When <span class="math inline">\(X\)</span> is continuous, the Shannon entropy is known as the <strong><em>differential entropy</em></strong>.</p>
 <p>If we have two separate probability distributions <span class="math inline">\(P(X)\)</span> and <span class="math inline">\(Q(X)\)</span> over the same random variable <span class="math inline">\(X\)</span>, we can measure how different these two distributions are using the <strong><em>Kullback-Leibler (KL) divergence</em></strong>: <span class="math display">\[
 D_{KL}(P \parallel Q) = \mathbf{E}_{X \sim P}\left[\log \frac{P(x)}{Q(x)}\right] = \mathbf{E}_{X \sim P}[\log P(x)- \log Q(x)]
-\]</span></p>
-</div>
-</div>
+\]</span> The KL divergence is <span class="math inline">\(0\)</span> iff <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> are the same distribution. However, it is not a true distance metric because it is not symmetric: In general, <span class="math inline">\(D_{KL}(P \parallel Q) \neq D_{KL}(Q \parallel P)\)</span>.</p>
+<p>A quantity that is closely related to the KL divergence is the <strong><em>cross-entropy</em></strong> <span class="math inline">\(H(P,Q) = H(P)+D_{KL}(P \parallel Q)\)</span>: <span class="math display">\[
+H(P,Q) = \mathbf{E}_{X \sim P} \log Q(x)
+\]</span> Minimizing the cross-entropy with respect to <span class="math inline">\(Q\)</span> is equivalent to minimizing the KL divergence, because <span class="math inline">\(Q\)</span> does not participate in the omitted term.</p>
 </div>
 
 

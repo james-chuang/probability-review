@@ -9,8 +9,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 ```
-
-# **probability and information theory**
+My notes reviewing probability and information theory, combining information from the [Stanford CS229 probability theory notes](http://cs229.stanford.edu/section/cs229-prob.pdf) and the Chapter 3 of the [Deep Learning Book](http://www.deeplearningbook.org/). Again, most of the material is directly transcribed from these sources. Note that the two sources use slightly different notation, and I haven't been bothered to make everything consistent.
 
 ***Probability theory***
 
@@ -380,7 +379,7 @@ Useful properties of the logistic sigmoid and softplus functions:
 
 The function $\sigma^{-1}(x)$ is called the ***logit*** in statistics.
 
-***information theory***
+#***information theory***
 
 **Information theory**- a branch of applied math revolving around quantifying how much information is present in a signal.
 
@@ -408,4 +407,10 @@ If we have two separate probability distributions $P(X)$ and $Q(X)$ over the sam
 $$
 D_{KL}(P \parallel Q) = \mathbf{E}_{X \sim P}\left[\log \frac{P(x)}{Q(x)}\right] = \mathbf{E}_{X \sim P}[\log P(x)- \log Q(x)]
 $$
+The KL divergence is $0$ iff $P$ and $Q$ are the same distribution. However, it is not a true distance metric because it is not symmetric: In general, $D_{KL}(P \parallel Q) \neq D_{KL}(Q \parallel P)$.
 
+A quantity that is closely related to the KL divergence is the ***cross-entropy*** $H(P,Q) = H(P)+D_{KL}(P \parallel Q)$:
+$$
+H(P,Q) = \mathbf{E}_{X \sim P} \log Q(x)
+$$
+Minimizing the cross-entropy with respect to $Q$ is equivalent to minimizing the KL divergence, because $Q$ does not participate in the omitted term.
