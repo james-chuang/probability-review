@@ -411,6 +411,6 @@ The KL divergence is $0$ iff $P$ and $Q$ are the same distribution. However, it 
 
 A quantity that is closely related to the KL divergence is the ***cross-entropy*** $H(P,Q) = H(P)+D_{KL}(P \parallel Q)$:
 $$
-H(P,Q) = \mathbf{E}_{X \sim P} \log Q(x)
+H(P,Q) = - \mathbf{E}_{X \sim P} \log Q(x)
 $$
 Minimizing the cross-entropy with respect to $Q$ is equivalent to minimizing the KL divergence, because $Q$ does not participate in the omitted term.
