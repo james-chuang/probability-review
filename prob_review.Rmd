@@ -1,8 +1,19 @@
 ---
+title: "Probability review"
+author: James Chuang
+date: February 27, 2017
+mainfont: FreeSans
+linkcolor: "purple"
 output:
-  html_document:
-    fig_width: 4.5
-    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+    pdf_document:
+        latex_engine: xelatex
+        toc: true
+        number_sections: false
+        fig_width: 4.5
+        df_print: tibble
+  # html_document:
+  #   fig_width: 4.5
+  #   css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
 ---
 
 ```{r setup, include=FALSE}
@@ -57,7 +68,7 @@ The deep learning book says, "a ***random variable*** is a variable that can tak
 
 Random variables may be discrete or continuous. A ***discrete random variable*** is one that has a finite or countably infinite number of states. The probability of the set associated with a random variable $X$ taking on a specific value $k$ is:
 $$
-P(X=k) \triangleq P(\{\omega : X(\omega) \}) 
+P(X=k) \triangleq P(\{\omega : X(\omega) \})
 $$
 A ***continuous random variable*** is associated with a real value, i.e. it takes on an infinite number of possible values. The probability that $X$ takes on a value between $a,b \in \mathbb{R}$, where $a<b$ is:
 $$
@@ -81,7 +92,7 @@ Properties of the CDF:
 Probability distributions over discrete random variables are described using a ***probability mass function*** (PMF), a function $p_X: \Omega \rightarrow \mathbb{R}$ such that:
 $$
 p_X(x) \triangleq P(X=x)
-$$ 
+$$
 For discrete random variables, the notation $\text{Val}(X)$ is used to indicate the set of possible values that the random variable $X$ may assume ($\text{Val}(X)$ is the domain of $p_X(x)$). For example, if $X(\omega)$ is a random variable indicating the number of heads out of ten coin tosses, then $\text{Val}(X)=\{0,1,2, \dots, 10\}$.
 
 Properties of PMFs:
@@ -131,19 +142,19 @@ provided $f_X(x) \neq 0$.
 Any joint probability distribution over many random variables may be decomposed into conditional distributions over only one variable. This follows directly from the above definition of conditional probabilities:
 
 $$
-\begin{align}
+\begin{aligned}
 & P(X_1, \dots, X_n) \\
 & = P(X_n | X_1, X_2, \dots, X_{n-1}) P(X_1, X_2, \dots, X_{n-1}) \\
 & = \dots \\
 & = P(X_1) \prod_{i=2}^n P(X_i | X_1, \dots, X_{i-1})
-\end{align}
+\end{aligned}
 $$
 For example,
 $$
-\begin{align}
+\begin{aligned}
 P(a,b,c)  & = P(a \mid b,c) P(b,c) \\
           & = P(a \mid b,c) P(b \mid c) P(c) \\
-\end{align}
+\end{aligned}
 $$
 
 ## **Bayes' rule (CS229 3.5, DL 3.11)**
@@ -200,16 +211,16 @@ $$
 $$
 Using the properties of the expected value (namely that expectations are linear and that $\mathbf{E}[X]$ is a constant wrt an outer expectation), we can derive an alternate expression for the variance:
 $$
-\begin{align}
+\begin{aligned}
 \text{Var}[X] & = \mathbf{E}[(X-E[X])^2] \\
               & = \mathbf{E}[X^2-2X \mathbf{E}[X] + \mathbf{E}^2[X]] \\
               & = \mathbf{E}[X^2] - 2 \mathbf{E}\left[X \mathbf{E}[X]\right] + \mathbf{E}\left[\mathbf{E}^2[X]\right] \\
               & = \mathbf{E}[X^2] - 2 \mathbf{E}[X] \mathbf{E}[X] + \mathbf{E}^2[X] \\
               & = \mathbf{E}[X^2] - \mathbf{E}^2[X]
-\end{align}
+\end{aligned}
 $$
 
-When the variance is low, the values of $f(x)$ cluster near their expected value. The square root of the variance is known as the ***standard deviation***. 
+When the variance is low, the values of $f(x)$ cluster near their expected value. The square root of the variance is known as the ***standard deviation***.
 
 Properties of the variance:
 
@@ -222,12 +233,12 @@ $$
 $$
 Using an argument similar to that for variance (linearity of expectations and the fact that expectations of constants are just the constants), this can be rewritten as:
 $$
-\begin{align}
+\begin{aligned}
 \text{Cov}[X,Y] & = \mathbf{E}[(X-\mathbf{E}[X])(Y-\mathbf{E}[Y])] \\
                 & = \mathbf{E}[XY-X\mathbf{E}[Y]-Y\mathbf{E}[X]+ \mathbf{E}[X]\mathbf{E}[Y]] \\
                 & = \mathbf{E}[XY] - \mathbf{E}[X]\mathbf{E}[Y]- \mathbf{E}[Y]\mathbf{E}[X] + \mathbf{E}[X]\mathbf{E}[Y] \\
                 & = \mathbf{E}[XY] - \mathbf{E}[X]\mathbf{E}[Y]
-\end{align}
+\end{aligned}
 $$
 
 Properties of expectation and covariance for two random variables:
@@ -245,7 +256,7 @@ $$
 $$
 From the definition of covariance, we have:
 $$
-\begin{align}
+\begin{aligned}
 \Sigma  & = \begin{bmatrix}
             \text{Cov}[X_1, X_1]  &   \cdots  & \text{Cov}[X_1, X_n]  \\
             \vdots                &   \ddots  & \vdots                \\
@@ -260,7 +271,7 @@ $$
             \mathbf{E}[X_1^2]  &   \cdots  & \mathbf{E}[X_1X_n]   \\
             \vdots             &   \ddots  & \vdots                \\
             \mathbf{E}[X_nX_1] &   \cdots  & \mathbf{E}[X_n^2]
-            \end{bmatrix} - 
+            \end{bmatrix} -
             \begin{bmatrix}
             \mathbf{E}[X_1]\mathbf{E}[X_1]  &   \cdots  & \mathbf{E}[X_1]\mathbf{E}[X_n]  \\
             \vdots             &   \ddots  & \vdots                \\
@@ -269,7 +280,7 @@ $$
         & = \mathbf{E}[XX^T]-\mathbf{E}[X]\mathbf{E}[X]^T \\
         & = ...\\
         & = \mathbf{E}[(X-\mathbf{E}[X])(X-\mathbf{E}[X])^T]
-\end{align}
+\end{aligned}
 $$
 Properties of the covariance matrix:
 
